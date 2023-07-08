@@ -147,7 +147,7 @@ class _PersistentTabScaffoldState extends State<PersistentTabScaffold> {
       tabBuilder: widget.tabBuilder,
       stateManagement: widget.stateManagement,
       screenTransitionAnimation: widget.screenTransitionAnimation,
-      backgroundColor: widget.tabBar.navBarEssentials!.backgroundColor,
+      backgroundColor: Colors.transparent,
     );
     double contentPadding = 0;
 
@@ -417,42 +417,38 @@ class _TabSwitchingViewState extends State<_TabSwitchingView>
     }
   }
 
-  DecoratedBox _buildScreens() => DecoratedBox(
-        decoration: const BoxDecoration(color: CupertinoColors.black),
-        child: Stack(
-          fit: StackFit.expand,
-          children: List<Widget>.generate(widget.tabCount!, (final index) {
-            final bool active = index == widget.currentTabIndex ||
-                (widget.screenTransitionAnimation!.animateTabTransition &&
-                    index == _lastIndex);
-            shouldBuildTab[index] = active || shouldBuildTab[index];
+  Stack _buildScreens() => Stack(
+        fit: StackFit.expand,
+        children: List<Widget>.generate(widget.tabCount!, (final index) {
+          final bool active = index == widget.currentTabIndex ||
+              (widget.screenTransitionAnimation!.animateTabTransition &&
+                  index == _lastIndex);
+          shouldBuildTab[index] = active || shouldBuildTab[index];
 
-            return Offstage(
-              offstage: !active,
-              child: TickerMode(
-                enabled: active,
-                child: FocusScope(
-                  node: tabFocusNodes[index],
-                  child: Builder(
-                      builder: (final context) => shouldBuildTab[index]
-                          ? (widget.screenTransitionAnimation!
-                                  .animateTabTransition
-                              ? AnimatedBuilder(
-                                  animation: _animations[index]!,
-                                  builder: (final context, final child) =>
-                                      Transform.translate(
-                                    offset:
-                                        Offset(_animations[index]!.value, 0),
-                                    child: widget.tabBuilder(context, index),
-                                  ),
-                                )
-                              : widget.tabBuilder(context, index))
-                          : Container()),
-                ),
+          return Offstage(
+            offstage: !active,
+            child: TickerMode(
+              enabled: active,
+              child: FocusScope(
+                node: tabFocusNodes[index],
+                child: Builder(
+                    builder: (final context) => shouldBuildTab[index]
+                        ? (widget
+                                .screenTransitionAnimation!.animateTabTransition
+                            ? AnimatedBuilder(
+                                animation: _animations[index]!,
+                                builder: (final context, final child) =>
+                                    Transform.translate(
+                                  offset: Offset(_animations[index]!.value, 0),
+                                  child: widget.tabBuilder(context, index),
+                                ),
+                              )
+                            : widget.tabBuilder(context, index))
+                        : Container()),
               ),
-            );
-          }),
-        ),
+            ),
+          );
+        }),
       );
 
   @override
