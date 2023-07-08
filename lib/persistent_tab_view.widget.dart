@@ -428,7 +428,10 @@ class _PersistentTabViewState extends State<PersistentTabView> {
                   _sendScreenContext = false;
                   widget.selectedTabScreenContext!(_contextList[index]);
                 }
-                return Material(child: widget.screens[index]);
+                return Material(
+                  color: Colors.transparent,
+                  child: widget.screens[index],
+                );
               },
             ),
           ),
@@ -454,7 +457,10 @@ class _PersistentTabViewState extends State<PersistentTabView> {
                   _sendScreenContext = false;
                   widget.selectedTabScreenContext!(_contextList[index]);
                 }
-                return Material(child: widget.screens[index]);
+                return Material(
+                  color: Colors.transparent,
+                  child: widget.screens[index],
+                );
               },
             ),
           ),
@@ -520,7 +526,10 @@ class _PersistentTabViewState extends State<PersistentTabView> {
                   _sendScreenContext = false;
                   widget.selectedTabScreenContext!(_contextList[index]);
                 }
-                return Material(child: widget.screens[index]);
+                return Material(
+                  color: Colors.transparent,
+                  child: widget.screens[index],
+                );
               },
             ),
           ),
@@ -579,7 +588,10 @@ class _PersistentTabViewState extends State<PersistentTabView> {
               _sendScreenContext = false;
               widget.selectedTabScreenContext!(_contextList[index]);
             }
-            return Material(child: widget.screens[index]);
+            return Material(
+              color: Colors.transparent,
+              child: widget.screens[index],
+            );
           });
     }
   }
