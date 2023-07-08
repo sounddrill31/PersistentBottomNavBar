@@ -17,7 +17,7 @@ class PersistentTabView extends PersistentTabViewBase {
       this.controller,
       final double navBarHeight = kBottomNavigationBarHeight,
       this.margin = EdgeInsets.zero,
-      this.backgroundColor = CupertinoColors.white,
+      this.backgroundColor = Colors.transparent,
       final ValueChanged<int>? onItemSelected,
       final NeumorphicProperties? neumorphicProperties,
       this.floatingActionButton,
@@ -95,7 +95,7 @@ class PersistentTabView extends PersistentTabViewBase {
     this.bottomScreenMargin,
     this.selectedTabScreenContext,
     this.hideNavigationBarWhenKeyboardShows = true,
-    this.backgroundColor = CupertinoColors.white,
+    this.backgroundColor = Colors.transparent,
     final CustomWidgetRouteAndNavigatorSettings routeAndNavigatorSettings =
         const CustomWidgetRouteAndNavigatorSettings(),
     this.confineInSafeArea = true,

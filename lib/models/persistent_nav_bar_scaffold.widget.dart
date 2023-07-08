@@ -203,7 +203,6 @@ class _PersistentTabScaffoldState extends State<PersistentTabScaffold> {
                       : 0),
           curve:
               widget.tabBar.hideNavigationBar! ? Curves.linear : Curves.easeIn,
-          color: widget.tabBar.navBarDecoration!.colorBehindNavBar,
           padding: EdgeInsets.only(bottom: contentPadding),
           child: content,
         ),
@@ -212,45 +211,36 @@ class _PersistentTabScaffoldState extends State<PersistentTabScaffold> {
       content = MediaQuery(
         data: newMediaQuery,
         child: Container(
-          color: widget.tabBar.navBarDecoration!.colorBehindNavBar,
+          // color: widget.tabBar.navBarDecoration!.colorBehindNavBar,
           padding: EdgeInsets.only(bottom: contentPadding),
           child: content,
         ),
       );
     }
 
-    return DecoratedBox(
-      decoration:
-          widget.tabBar.navBarDecoration!.borderRadius != BorderRadius.zero
-              ? BoxDecoration(
-                  color: CupertinoColors.black.withOpacity(0),
-                  borderRadius: widget.tabBar.navBarDecoration!.borderRadius,
-                )
-              : BoxDecoration(color: CupertinoColors.black.withOpacity(1)),
-      child: Stack(
-        children: <Widget>[
-          content,
-          MediaQuery(
-            data: existingMediaQuery.copyWith(textScaleFactor: 1),
-            child: Align(
-              alignment: Alignment.bottomCenter,
-              child: widget.tabBar.copyWith(
-                selectedIndex: _controller!.index,
-                onItemSelected: (final newIndex) {
-                  _controller!.index = newIndex;
-                  if (widget.tabBar.navBarEssentials!.onItemSelected != null) {
-                    setState(() {
-                      _selectedIndex = newIndex;
-                      _isTapAction = true;
-                      widget.tabBar.navBarEssentials!.onItemSelected!(newIndex);
-                    });
-                  }
-                },
-              ),
+    return Stack(
+      children: <Widget>[
+        content,
+        MediaQuery(
+          data: existingMediaQuery.copyWith(textScaleFactor: 1),
+          child: Align(
+            alignment: Alignment.bottomCenter,
+            child: widget.tabBar.copyWith(
+              selectedIndex: _controller!.index,
+              onItemSelected: (final newIndex) {
+                _controller!.index = newIndex;
+                if (widget.tabBar.navBarEssentials!.onItemSelected != null) {
+                  setState(() {
+                    _selectedIndex = newIndex;
+                    _isTapAction = true;
+                    widget.tabBar.navBarEssentials!.onItemSelected!(newIndex);
+                  });
+                }
+              },
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -504,7 +494,6 @@ class _TabSwitchingViewState extends State<_TabSwitchingView>
       key = UniqueKey();
     }
     return Container(
-      color: widget.backgroundColor,
       child: widget.stateManagement!
           ? _buildScreens()
           : KeyedSubtree(
