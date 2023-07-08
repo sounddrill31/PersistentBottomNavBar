@@ -15,7 +15,7 @@ class PersistentTabView extends PersistentTabViewBase {
       final Key? key,
       final List<PersistentBottomNavBarItem>? items,
       this.controller,
-      final double navBarHeight = kBottomNavigationBarHeight,
+      this.navBarHeight = kBottomNavigationBarHeight,
       this.margin = EdgeInsets.zero,
       this.backgroundColor = Colors.transparent,
       final ValueChanged<int>? onItemSelected,
@@ -93,6 +93,7 @@ class PersistentTabView extends PersistentTabViewBase {
     this.floatingActionButton,
     this.resizeToAvoidBottomInset = false,
     this.bottomScreenMargin,
+    this.navBarHeight = 60,
     this.selectedTabScreenContext,
     this.hideNavigationBarWhenKeyboardShows = true,
     this.backgroundColor = Colors.transparent,
@@ -123,6 +124,7 @@ class PersistentTabView extends PersistentTabViewBase {
           itemCount: itemCount,
           resizeToAvoidBottomInset: resizeToAvoidBottomInset,
           bottomScreenMargin: bottomScreenMargin,
+          navBarHeight: navBarHeight,
           onWillPop: onWillPop,
           confineInSafeArea: confineInSafeArea,
           stateManagement: stateManagement,
@@ -152,7 +154,8 @@ class PersistentTabView extends PersistentTabViewBase {
   ///Specifies the navBarHeight
   ///
   ///Defaults to `kBottomNavigationBarHeight` which is `56.0`.
-  //final double navBarHeight;
+  @override
+  final double navBarHeight;
 
   ///The margin around the navigation bar.
   @override
