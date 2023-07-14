@@ -32,6 +32,7 @@ class PersistentTabView extends PersistentTabViewBase {
       final PopActionScreensType popActionScreens = PopActionScreensType.all,
       this.confineInSafeArea = true,
       this.onWillPop,
+      this.onItemTapped,
       this.stateManagement = true,
       this.handleAndroidBackButtonPress = true,
       final ItemAnimationProperties? itemAnimationProperties,
@@ -74,6 +75,7 @@ class PersistentTabView extends PersistentTabViewBase {
           resizeToAvoidBottomInset: resizeToAvoidBottomInset,
           bottomScreenMargin: bottomScreenMargin,
           onWillPop: onWillPop,
+          onItemTapped: onItemTapped,
           isCustomWidget: false,
           confineInSafeArea: confineInSafeArea,
           stateManagement: stateManagement,
@@ -101,6 +103,7 @@ class PersistentTabView extends PersistentTabViewBase {
         const CustomWidgetRouteAndNavigatorSettings(),
     this.confineInSafeArea = true,
     this.onWillPop,
+    this.onItemTapped,
     this.stateManagement = true,
     this.handleAndroidBackButtonPress = true,
     this.hideNavigationBar,
@@ -126,6 +129,7 @@ class PersistentTabView extends PersistentTabViewBase {
           bottomScreenMargin: bottomScreenMargin,
           navBarHeight: navBarHeight,
           onWillPop: onWillPop,
+          onItemTapped: onItemTapped,
           confineInSafeArea: confineInSafeArea,
           stateManagement: stateManagement,
           handleAndroidBackButtonPress: handleAndroidBackButtonPress,
@@ -189,6 +193,9 @@ class PersistentTabView extends PersistentTabViewBase {
   @override
   final Future<bool> Function(BuildContext?)? onWillPop;
 
+  @override
+  final Function(int)? onItemTapped;
+
   ///Returns the context of the selected tab.
   @override
   final Function(BuildContext?)? selectedTabScreenContext;
@@ -237,6 +244,7 @@ class PersistentTabViewBase extends StatefulWidget {
     this.popAllScreensOnTapAnyTabs,
     this.popActionScreens,
     this.onWillPop,
+    this.onItemTapped,
     this.hideNavigationBarWhenKeyboardShows,
     this.itemAnimationProperties,
     this.isCustomWidget,
@@ -323,6 +331,8 @@ class PersistentTabViewBase extends StatefulWidget {
   ///If you want to perform a custom action on Android when exiting the app, you can write your logic here.
   final Future<bool> Function(BuildContext)? onWillPop;
 
+  final Function(int)? onItemTapped;
+
   ///Screen transition animation properties when switching tabs.
   final ScreenTransitionAnimation? screenTransitionAnimation;
 
@@ -352,6 +362,7 @@ class PersistentTabViewBase extends StatefulWidget {
 class _PersistentTabViewState extends State<PersistentTabView> {
   late List<BuildContext?> _contextList;
   PersistentTabController? _controller;
+  DateTime? backButtonPressTime;
   double? _navBarHeight;
   int? _previousIndex;
   int? _currentIndex;
@@ -706,7 +717,7 @@ class _PersistentTabViewState extends State<PersistentTabView> {
       return WillPopScope(
         onWillPop: !widget.handleAndroidBackButtonPress &&
                 widget.onWillPop != null
-            ? widget.onWillPop!(_contextList[_controller!.index])
+            ? (() => widget.onWillPop!(_contextList[_controller!.index]))
                 as Future<bool> Function()?
             : widget.handleAndroidBackButtonPress && widget.onWillPop != null
                 ? () async {
@@ -726,13 +737,43 @@ class _PersistentTabViewState extends State<PersistentTabView> {
                 : () async {
                     if (_controller!.index == 0 &&
                         !Navigator.canPop(_contextList.first!)) {
-                      return true;
+                      try {
+                        final now = DateTime.now();
+                        final backButtonHasNotBeenPressedOrSnackBarHasBeenClosed =
+                            backButtonPressTime == null ||
+                                now.difference(backButtonPressTime!) >
+                                    const Duration(seconds: 3);
+
+                        if (backButtonHasNotBeenPressedOrSnackBarHasBeenClosed) {
+                          backButtonPressTime = now;
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              duration: const Duration(seconds: 2),
+                              elevation: 6,
+                              backgroundColor: Colors.grey[900],
+                              behavior: SnackBarBehavior.floating,
+                              content: const Text(
+                                "Press again to exit",
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ),
+                          );
+                          return false;
+                        }
+                        return true;
+                      } catch (e) {
+                        return false;
+                      }
                     } else {
                       if (Navigator.canPop(_contextList[_controller!.index]!)) {
                         Navigator.pop(_contextList[_controller!.index]!);
                       } else {
-                        widget.onItemSelected?.call(0);
-                        _controller!.index = 0;
+                        if (widget.onItemTapped != null) {
+                          widget.onItemTapped!(0);
+                        } else {
+                          widget.onItemSelected?.call(0);
+                          _controller!.index = 0;
+                        }
                       }
                       return false;
                     }
